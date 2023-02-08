@@ -8,6 +8,7 @@ import {
 	TextField,
 	Box,
 	InputLabel,
+	useMediaQuery,
 } from '@mui/material';
 import { getPhotos } from '../Services/GalleryService';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -35,6 +36,8 @@ const PhotoGrid = () => {
 	const [orientation, setOrientation] = useState('all');
 	const [isLoading, setIsLoading] = useState(false);
 	const [totalPages, setTotalPages] = useState(1);
+	const small = useMediaQuery('(max-width:600px)');
+	const medium = useMediaQuery('(max-width:1000px)');
 
 	const observer = useRef<IntersectionObserver | null>(null);
 
@@ -114,7 +117,7 @@ const PhotoGrid = () => {
 
 	return (
 		<Box padding="3rem">
-			<Box display="flex" justifyContent="center">
+			<Box display={small ? 'block' : 'flex'} justifyContent="center">
 				<TextField
 					sx={{ margin: '.5rem' }}
 					label="Search Photos"
@@ -169,7 +172,7 @@ const PhotoGrid = () => {
 				</FormControl>
 			</Box>
 
-			<ImageList cols={3} gap={8}>
+			<ImageList cols={small ? 1 : medium ? 2 : 3} gap={8}>
 				{photos &&
 					photos.map((photo, index) => (
 						<ImageListItem key={photo.id + index}>
@@ -185,16 +188,13 @@ const PhotoGrid = () => {
 									src={photo.urls.full}
 								/>
 							</Link>
-
-							<div
-								className={`${
-									totalPages <= page ? 'hidden' : ''
-								}`}
-								ref={lastElementRef}
-								style={{ height: '0' }}
-							></div>
 						</ImageListItem>
 					))}
+				<div
+					className={`${totalPages <= page ? 'hidden' : ''}`}
+					ref={lastElementRef}
+					style={{ height: '0' }}
+				></div>
 			</ImageList>
 		</Box>
 	);
